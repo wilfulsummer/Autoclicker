@@ -1,9 +1,17 @@
+import importlib.util
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import app
 import engine_bridge
+
+BOOTSTRAP_PATH = Path(__file__).resolve().parent / "app.pyw"
+BOOTSTRAP_SPEC = importlib.util.spec_from_file_location("app_bootstrap", BOOTSTRAP_PATH)
+app_bootstrap = importlib.util.module_from_spec(BOOTSTRAP_SPEC)
+assert BOOTSTRAP_SPEC and BOOTSTRAP_SPEC.loader
+BOOTSTRAP_SPEC.loader.exec_module(app_bootstrap)
 
 
 class DummyVar:
@@ -403,6 +411,21 @@ class AppLogicTests(unittest.TestCase):
                 "precisionMode": True,
             }
         )
+
+    def test_bootstrap_required_packages_parses_versions_and_comments(self):
+        fake_requirements = MagicMock()
+        fake_requirements.exists.return_value = True
+        fake_requirements.read_text.return_value = "\n# comment\npynput>=1.7\nrequests==2.32.0\npackage-name[extra]\n"
+        with patch.object(app_bootstrap, "REQUIREMENTS_FILE", fake_requirements):
+            self.assertEqual(
+                app_bootstrap._required_packages(),
+                ["pynput", "requests", "package-name"],
+            )
+
+    def test_bootstrap_missing_packages_uses_module_name_map(self):
+        with patch.object(app_bootstrap, "_required_packages", return_value=["pynput", "custom-package"]):
+            with patch("importlib.util.find_spec", side_effect=[None, object()]):
+                self.assertEqual(app_bootstrap._missing_packages(), ["pynput"])
 
     def test_refresh_segments_does_not_override_geometry_font(self):
         instance = self.make_app()
