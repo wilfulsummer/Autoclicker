@@ -9,7 +9,7 @@ a = Analysis(
     ['app.pyw'],
     pathex=[],
     binaries=[],
-    datas=[('app_settings.json', '.'), ('clicker_settings.json', '.'), ('settings_presets.json', '.'), ('theme_presets.json', '.'), ('theme_settings.json', '.'), ('engine\\AutoClicker.Engine\\bin\\Release\\net8.0-windows', 'engine\\AutoClicker.Engine\\bin\\Release\\net8.0-windows')],
+    datas=[('app_settings.json', '.'), ('clicker_settings.json', '.'), ('settings_presets.json', '.'), ('theme_presets.json', '.'), ('theme_settings.json', '.'), ('engine\\publish', 'engine\\publish')],
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},

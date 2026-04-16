@@ -65,6 +65,7 @@ Notes:
 - The packaged `.exe` is for other people using the app.
 - Your local development workflow can stay source-based with `python app.pyw`.
 - The packaged build writes user settings to `%LOCALAPPDATA%\AutoClicker` so it does not need write access beside the `.exe`.
+- Release builds now publish and bundle a self-contained native click engine so high-CPS mode does not depend on the target machine having .NET installed.
 
 ## Default Hotkeys
 

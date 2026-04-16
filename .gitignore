@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 build/
+.appdata/
+.dotnet_cli/
+.nuget/
+NuGet/
+engine/publish/
+engine/AutoClicker.Engine/bin/
+engine/AutoClicker.Engine/obj/

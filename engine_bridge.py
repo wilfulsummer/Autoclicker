@@ -9,8 +9,14 @@ from typing import Callable
 from runtime_paths import bundled_path
 
 
-ENGINE_DLL = bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.dll")
-ENGINE_EXE = bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.exe")
+ENGINE_EXE_CANDIDATES = [
+    bundled_path("engine", "publish", "AutoClicker.Engine.exe"),
+    bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.exe"),
+]
+ENGINE_DLL_CANDIDATES = [
+    bundled_path("engine", "publish", "AutoClicker.Engine.dll"),
+    bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.dll"),
+]
 LOCAL_DOTNET = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "dotnet" / "dotnet.exe"
 SYSTEM_DOTNET = Path(r"C:\Program Files\dotnet\dotnet.exe")
 
@@ -135,12 +141,14 @@ class EngineBridge:
                 self.on_message(message)
 
     def _launch_command(self) -> list[str] | None:
-        if ENGINE_DLL.exists():
+        engine_dll = next((candidate for candidate in ENGINE_DLL_CANDIDATES if candidate.exists()), None)
+        if engine_dll is not None:
             dotnet_path = self._dotnet_host_path()
             if dotnet_path is not None:
-                return [str(dotnet_path), str(ENGINE_DLL)]
-        if ENGINE_EXE.exists():
-            return [str(ENGINE_EXE)]
+                return [str(dotnet_path), str(engine_dll)]
+        engine_exe = next((candidate for candidate in ENGINE_EXE_CANDIDATES if candidate.exists()), None)
+        if engine_exe is not None:
+            return [str(engine_exe)]
         return None
 
     @staticmethod

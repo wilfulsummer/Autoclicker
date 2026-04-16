@@ -55,8 +55,11 @@
 - CPS mismatch bug was fixed by:
   - correct bridge payload field names
   - fractional interval support in the native engine path
+- Release packaging now publishes a self-contained native engine for the bundled `.exe`
+  - avoids .NET-runtime dependency on end-user machines
+  - prevents high-CPS release builds from silently falling back to the slower Python loop
 - Latest backend validation:
-  - `python -m py_compile app.py app.pyw engine_bridge.py`
+  - `python -m py_compile app.py app.pyw engine_bridge.py runtime_paths.py`
   - `python -m unittest test_app_logic.py`
 
 ## Latest UI Notes

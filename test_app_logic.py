@@ -440,6 +440,20 @@ class AppLogicTests(unittest.TestCase):
                     self.assertFalse(bridge.start_process())
         bridge.shutdown.assert_called_once()
 
+    def test_engine_bridge_prefers_published_exe_for_packaged_builds(self):
+        bridge = engine_bridge.EngineBridge()
+        published_exe = MagicMock()
+        published_exe.exists.return_value = True
+        legacy_exe = MagicMock()
+        legacy_exe.exists.return_value = False
+        published_dll = MagicMock()
+        published_dll.exists.return_value = False
+        legacy_dll = MagicMock()
+        legacy_dll.exists.return_value = False
+        with patch.object(engine_bridge, "ENGINE_EXE_CANDIDATES", [published_exe, legacy_exe]):
+            with patch.object(engine_bridge, "ENGINE_DLL_CANDIDATES", [published_dll, legacy_dll]):
+                self.assertEqual(bridge._launch_command(), [str(published_exe)])
+
     def test_bootstrap_required_packages_parses_versions_and_comments(self):
         fake_requirements = MagicMock()
         fake_requirements.exists.return_value = True
