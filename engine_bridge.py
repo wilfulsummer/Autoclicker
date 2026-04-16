@@ -34,6 +34,7 @@ class EngineBridge:
         self.on_message = on_message
         self.process: subprocess.Popen[str] | None = None
         self._reader_thread: threading.Thread | None = None
+        self._ready_event = threading.Event()
 
     @property
     def available(self) -> bool:
@@ -49,6 +50,7 @@ class EngineBridge:
         command = self._launch_command()
         if command is None:
             return False
+        self._ready_event.clear()
         creationflags = 0
         startupinfo = None
         if os.name == "nt":
@@ -69,7 +71,10 @@ class EngineBridge:
         )
         self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
         self._reader_thread.start()
-        return True
+        if self._ready_event.wait(timeout=1.5):
+            return True
+        self.shutdown()
+        return False
 
     def configure(self, config: EngineConfig) -> None:
         payload = asdict(config)
@@ -96,6 +101,7 @@ class EngineBridge:
         self._send({"type": "stop"})
 
     def shutdown(self) -> None:
+        self._ready_event.clear()
         if not self.running:
             return
         self._send({"type": "shutdown"})
@@ -123,6 +129,8 @@ class EngineBridge:
                 message = json.loads(line)
             except json.JSONDecodeError:
                 message = {"type": "log", "message": line}
+            if message.get("type") == "ready":
+                self._ready_event.set()
             if self.on_message:
                 self.on_message(message)
 

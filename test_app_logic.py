@@ -412,6 +412,34 @@ class AppLogicTests(unittest.TestCase):
             }
         )
 
+    def test_engine_bridge_start_process_waits_for_ready_signal(self):
+        bridge = engine_bridge.EngineBridge()
+        process = MagicMock()
+        process.poll.return_value = None
+        fake_thread = MagicMock()
+
+        def signal_ready():
+            bridge._ready_event.set()
+
+        fake_thread.start.side_effect = signal_ready
+        with patch.object(bridge, "_launch_command", return_value=["engine.exe"]):
+            with patch("engine_bridge.subprocess.Popen", return_value=process):
+                with patch("engine_bridge.threading.Thread", return_value=fake_thread):
+                    self.assertTrue(bridge.start_process())
+        fake_thread.start.assert_called_once()
+        self.assertIs(bridge.process, process)
+
+    def test_engine_bridge_start_process_falls_back_when_ready_never_arrives(self):
+        bridge = engine_bridge.EngineBridge()
+        process = MagicMock()
+        process.poll.return_value = None
+        bridge.shutdown = MagicMock()
+        with patch.object(bridge, "_launch_command", return_value=["engine.exe"]):
+            with patch("engine_bridge.subprocess.Popen", return_value=process):
+                with patch("engine_bridge.threading.Thread", return_value=MagicMock()):
+                    self.assertFalse(bridge.start_process())
+        bridge.shutdown.assert_called_once()
+
     def test_bootstrap_required_packages_parses_versions_and_comments(self):
         fake_requirements = MagicMock()
         fake_requirements.exists.return_value = True
