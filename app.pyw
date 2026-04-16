@@ -2,10 +2,10 @@ import importlib.util
 import sys
 import tkinter as tk
 import webbrowser
-from pathlib import Path
+
+from runtime_paths import APP_DIR, IS_FROZEN
 
 
-APP_DIR = Path(__file__).resolve().parent
 REQUIREMENTS_FILE = APP_DIR / "requirements.txt"
 
 PACKAGE_LINKS = {
@@ -136,6 +136,11 @@ def _show_missing_dependencies_window(packages: list[str]) -> None:
 
 
 def main() -> None:
+    if IS_FROZEN:
+        from app import main as app_main
+        app_main()
+        return
+
     missing = _missing_packages()
     if missing:
         _show_missing_dependencies_window(missing)

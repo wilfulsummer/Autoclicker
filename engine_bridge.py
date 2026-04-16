@@ -6,10 +6,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Callable
 
+from runtime_paths import bundled_path
 
-APP_DIR = Path(__file__).resolve().parent
-ENGINE_DLL = APP_DIR / "engine" / "AutoClicker.Engine" / "bin" / "Release" / "net8.0-windows" / "AutoClicker.Engine.dll"
-ENGINE_EXE = APP_DIR / "engine" / "AutoClicker.Engine" / "bin" / "Release" / "net8.0-windows" / "AutoClicker.Engine.exe"
+
+ENGINE_DLL = bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.dll")
+ENGINE_EXE = bundled_path("engine", "AutoClicker.Engine", "bin", "Release", "net8.0-windows", "AutoClicker.Engine.exe")
 LOCAL_DOTNET = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "dotnet" / "dotnet.exe"
 SYSTEM_DOTNET = Path(r"C:\Program Files\dotnet\dotnet.exe")
 

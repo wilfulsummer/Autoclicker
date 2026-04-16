@@ -14,13 +14,13 @@ from tkinter import font as tkfont
 
 from pynput import keyboard, mouse
 from engine_bridge import EngineBridge, EngineConfig as NativeEngineConfig
+from runtime_paths import APP_DIR, ensure_seed_file
 
-APP_DIR = Path(__file__).resolve().parent
-THEME_FILE = APP_DIR / "theme_settings.json"
-PRESETS_FILE = APP_DIR / "theme_presets.json"
-SETTINGS_PRESETS_FILE = APP_DIR / "settings_presets.json"
-APP_SETTINGS_FILE = APP_DIR / "app_settings.json"
-CLICKER_FILE = APP_DIR / "clicker_settings.json"
+THEME_FILE = ensure_seed_file("theme_settings.json")
+PRESETS_FILE = ensure_seed_file("theme_presets.json")
+SETTINGS_PRESETS_FILE = ensure_seed_file("settings_presets.json")
+APP_SETTINGS_FILE = ensure_seed_file("app_settings.json")
+CLICKER_FILE = ensure_seed_file("clicker_settings.json")
 DEBUG_LOG_FILE = APP_DIR / "debug_layout.log"
 
 

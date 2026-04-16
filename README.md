@@ -28,15 +28,43 @@ A customizable autoclicker with a clean desktop GUI for Windows.
 pip install -r requirements.txt
 ```
 
-## Run
+## Run For Development
 
 ```powershell
-python main.py
+python app.pyw
 ```
 
 Or double-click:
 
 - `launch_autoclicker.vbs`
+
+This keeps the app in normal source-file form while you are developing it.
+
+## Build A Standalone `.exe`
+
+Install PyInstaller once:
+
+```powershell
+pip install pyinstaller
+```
+
+Then build the Windows release:
+
+```powershell
+.\build_exe.ps1
+```
+
+The packaged app will be created at:
+
+```text
+dist\AutoClicker.exe
+```
+
+Notes:
+
+- The packaged `.exe` is for other people using the app.
+- Your local development workflow can stay source-based with `python app.pyw`.
+- The packaged build writes user settings to `%LOCALAPPDATA%\AutoClicker` so it does not need write access beside the `.exe`.
 
 ## Default Hotkeys
 
